@@ -8,7 +8,29 @@ Nota: Existem testes que dependem de outros para serem passarem, nestes casos, s
 1. Diretamente no teste, passsando o argumento `skipCheckDependsOn` com o valor `true` na funcão `checkDependsOn`
 2. Na implementação da função `checkDependsOn`, o valor por omissão do argumento `skipCheckDependsOn` para `true`
 
-* Existe a classe `Station` com os atributos ....
+* Existe a classe `Station` com os atributos
+```
+String id;
+String name;
+double latitude, longitude;
+String lineName;
+List<IncidentReport> reports;
+```
+* Existe a classe `IncidentReport` com os atributos
+```
+DateTime timestamp;
+int rate;
+String? notes;
+IncidentType type;
+```
+* Ainda dentro da classe `IncidentReport` existe um enumerado `IncidentType` com os seguintes tipos
+```
+ESCALATOR
+ELEVATOR
+TICKET_MACHINE
+TURNSTILE
+OTHER
+```
 * Existe a classe `MetroRepository` com a API .... Construtor vazio, não inicializa logo com estação alguma
 * O `main()` deve pré-inicializar o `MetroRepository` com 3 estações (podem inventar os id's e dados, pois os testes vão inicializar de outra forma)
 * O Provider injeta instância de `MetroRepository`
