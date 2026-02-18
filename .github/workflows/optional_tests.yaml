@@ -1,0 +1,16 @@
+name: Optional Tests
+
+on:
+  workflow_call:
+
+jobs:
+  optional-tests:
+    name: Optional Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: ./.github/actions/setup_flutter

@@ -1,0 +1,95 @@
+name: Auto Release APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  dart-analyze:
+    name: Dart Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Actions
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: ./.github/actions/setup_flutter
+
+      - name: Dart Analyze check
+        run: dart analyze
+
+  check-tests-integrity:
+    name: Check Tests Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Validate GHA
+        run: |
+          GENERATED_HASH=$(find .github -type f -name "*.yaml" -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            | sha256sum \
+            | awk '{ print $1 }')
+
+          if [ "$GENERATED_HASH" != "$EXPECTED_GHA_HASH" ]; then
+            echo "GENERATED_HASH: $GENERATED_HASH"
+            echo "🚨🚓 Não deves modificar os ficheiros do GitHub Actions, se não foram modificados contacta o professor 🚨🚓"
+            exit 1
+          fi
+
+      - name: Validate teacher tests hash
+        run: |  
+          GENERATED_HASH=$(find test/teacher -type f -name "*.dart" -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            | sha256sum \
+            | awk '{ print $1 }')
+  
+          if [ "$GENERATED_HASH" != "$EXPECTED_TESTS_HASH" ]; then
+            echo "GENERATED_HASH: $GENERATED_HASH"
+            echo "🚨🚓 Não deves modificar os testes, se não foram modificados contacta o professor 🚨🚓"
+            exit 1
+          fi
+    env:
+      EXPECTED_GHA_HASH: ${{ secrets.EXPECTED_GHA_HASH }}
+      EXPECTED_TESTS_HASH: ${{ secrets.EXPECTED_TESTS_HASH }}
+
+  optional-tests:
+    needs: check-tests-integrity
+    if: ${{ hashFiles('test/teacher/widget_teacher_optional_test.dart') != '' }}
+    uses: ./.github/workflows/optional_tests.yaml
+
+  mandatory-tests:
+    needs: check-tests-integrity
+    uses: ./.github/workflows/mandatory_tests.yaml
+
+  build:
+    name: Build APK
+    needs: [dart-analyze, mandatory-tests]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Actions
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: ./.github/actions/setup_flutter
+
+      - name: Build APK
+        run: flutter build apk --debug
+
+      - name: Upload APK to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-apk
+          release_name: "Latest APK"
+          files: build/app/outputs/flutter-apk/app-debug.apk
+          body: ${{ env.BUILD_DATE }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
