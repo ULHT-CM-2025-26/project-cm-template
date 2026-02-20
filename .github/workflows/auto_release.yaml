@@ -6,23 +6,17 @@ on:
     branches:
       - main
 
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
 jobs:
-  dart-analyze:
-    name: Dart Analyze
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Actions
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: ./.github/actions/setup_flutter
-
-      - name: Dart Analyze check
-        run: dart analyze
-
   check-tests-integrity:
     name: Check Tests Integrity
     runs-on: ubuntu-latest
+    outputs:
+      exists: ${{ steps.optional.outputs.exists }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -42,38 +36,161 @@ jobs:
           fi
 
       - name: Validate teacher tests hash
-        run: |  
+        run: |
           GENERATED_HASH=$(find test/teacher -type f -name "*.dart" -print0 \
             | sort -z \
             | xargs -0 sha256sum \
             | sha256sum \
             | awk '{ print $1 }')
-  
+
           if [ "$GENERATED_HASH" != "$EXPECTED_TESTS_HASH" ]; then
             echo "GENERATED_HASH: $GENERATED_HASH"
             echo "🚨🚓 Não deves modificar os testes, se não foram modificados contacta o professor 🚨🚓"
             exit 1
           fi
+
+      - name: Check if optional tests exist
+        id: optional
+        run: |
+          if [ -f test/teacher/widget_teacher_optional_test.dart ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
     env:
       EXPECTED_GHA_HASH: ${{ secrets.EXPECTED_GHA_HASH }}
       EXPECTED_TESTS_HASH: ${{ secrets.EXPECTED_TESTS_HASH }}
 
-  optional-tests:
-    needs: check-tests-integrity
-    if: ${{ hashFiles('test/teacher/widget_teacher_optional_test.dart') != '' }}
-    uses: ./.github/workflows/optional_tests.yaml
-
   mandatory-tests:
+    name: Mandatory Tests
     needs: check-tests-integrity
-    uses: ./.github/workflows/mandatory_tests.yaml
+    runs-on: ubuntu-latest
+    env:
+      DART_DEFINES: --dart-define=SKIP_DEPENDS_ON=true
 
-  build:
-    name: Build APK
-    needs: [dart-analyze, mandatory-tests]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: ./.github/actions/setup_flutter
+
+      - name: Dart Analyze check
+        id: dart_analyze
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Dart Analyze check
+          command: dart analyze
+          timeout: 10
+          max-score: 1
+
+      - name: Test 1
+        id: test1
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: "Navegacao - Tem uma bottom bar com 4 opcoes"
+          command: flutter test ${{ env.DART_DEFINES }} --name "Navegacao - Tem uma bottom bar com 4 opcoes"
+          timeout: 10
+          max-score: 1
+
+      - name: Test 2
+        id: test2
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: "Navegacao - Bottom bar navega para os 4 ecras"
+          command: flutter test ${{ env.DART_DEFINES }} --name "Navegacao - Bottom bar navega para os 4 ecras"
+          timeout: 10
+          max-score: 1
+
+      - name: Test 3
+        id: test3
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: "Lista estacoes - Apresenta estacoes"
+          command: flutter test ${{ env.DART_DEFINES }} --name "Lista estacoes - Apresenta estacoes"
+          timeout: 10
+          max-score: 1
+
+      - name: Test 4
+        id: test4
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: "Lista estacoes - Navega para o detalhe da estacao escolhida"
+          command: flutter test ${{ env.DART_DEFINES }} --name "Lista estacoes - Navega para o detalhe da estacao escolhida"
+          timeout: 10
+          max-score: 1
+
+      - name: Test 5
+        id: test5
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: "Incidentes - Existencia de campos do formulario e botao de submeter"
+          command: flutter test ${{ env.DART_DEFINES }} --name "Incidentes - Existencia de campos do formulario e botao de submeter"
+          timeout: 10
+          max-score: 1
+
+      - name: Test 6
+        id: test6
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: "Incidentes - Valicadoes de erro"
+          command: flutter test ${{ env.DART_DEFINES }} --name "Incidentes - Valicadoes de erro"
+          timeout: 10
+          max-score: 1
+
+      - name: Test 7
+        id: test7
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: "Incidentes - Inserir incidente"
+          command: flutter test ${{ env.DART_DEFINES }} --name "Incidentes - Inserir incidente"
+          timeout: 10
+          max-score: 1
+
+      - name: Test 8
+        id: test8
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: "Detalhe - Apresenta incidente"
+          command: flutter test ${{ env.DART_DEFINES }} --name "Detalhe - Apresenta incidente"
+          timeout: 10
+          max-score: 1
+
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        with:
+          runners: dart_analyze,test1,test2,test3,test4,test5,test6,test7,test8
+        env:
+          DART_ANALYZE_RESULTS: ${{ steps.dart_analyze.outputs.result }}
+          TEST1_RESULTS: ${{ steps.test1.outputs.result }}
+          TEST2_RESULTS: ${{ steps.test2.outputs.result }}
+          TEST3_RESULTS: ${{ steps.test3.outputs.result }}
+          TEST4_RESULTS: ${{ steps.test4.outputs.result }}
+          TEST5_RESULTS: ${{ steps.test5.outputs.result }}
+          TEST6_RESULTS: ${{ steps.test6.outputs.result }}
+          TEST7_RESULTS: ${{ steps.test7.outputs.result }}
+          TEST8_RESULTS: ${{ steps.test8.outputs.result }}
+
+  optional-tests:
+    name: Mandatory Tests
+    needs: check-tests-integrity
+    if: ${{ needs.check-tests-integrity.outputs.exists == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Actions
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: ./.github/actions/setup_flutter
+
+  build:
+    name: Build APK
+    needs: mandatory-tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Setup Flutter

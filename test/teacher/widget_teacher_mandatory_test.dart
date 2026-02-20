@@ -16,7 +16,7 @@ void main() {
 
 void runWidgetTests() {
   // Tests start here
-  testWidgets('[Navegacao] Tem uma bottom bar com 4 opcoes', checkDependsOn((tester) async {
+  testWidgets('Navegacao - Tem uma bottom bar com 4 opcoes', checkDependsOn((tester) async {
     await _pumpApp(tester);
 
     expect(find.byType(NavigationBar), findsOneWidget,
@@ -36,7 +36,7 @@ void runWidgetTests() {
     }
   }));
 
-  testWidgets('[Navegacao] Bottom bar navega para os 4 ecras', checkDependsOn((tester) async {
+  testWidgets('Navegacao - Bottom bar navega para os 4 ecras', checkDependsOn((tester) async {
     await _pumpApp(tester);
 
     // Navigate to Dashboard
@@ -94,7 +94,7 @@ void runWidgetTests() {
         reason: "A key 'incidents-screen' deveria estar associada a um Scaffold no ecrã do registo de incidentes");
   }));
 
-  testWidgets('[Lista estacoes] Apresenta estacoes', checkDependsOn((tester) async {
+  testWidgets('Lista estacoes - Apresenta estacoes', checkDependsOn((tester) async {
     await _pumpApp(tester);
 
     final listBottomBarItemFinder = find.byKey(Key('list-bottom-bar-item'));
@@ -141,12 +141,12 @@ void runWidgetTests() {
         findsOneWidget,
         reason: "Deveria existir pelo menos um Text com o texto 'Linha Castanha' (no primeiro elemento da lista)");
   },
-  dependsOn: [
-    "[Navegacao] Tem uma bottom bar com 4 opcoes",
-    "[Navegacao] Bottom bar navega para os 4 ecras"
-  ]));
+      dependsOn: [
+        "Navegacao - Tem uma bottom bar com 4 opcoes",
+        "Navegacao - Bottom bar navega para os 4 ecras"
+      ]));
 
-  testWidgets("[Lista estacoes] Navega para o detalhe da estacao escolhida", checkDependsOn((tester) async {
+  testWidgets("Lista estacoes - Navega para o detalhe da estacao escolhida", checkDependsOn((tester) async {
     await _pumpApp(tester);
 
     await tester.tap(find.byKey(Key('list-bottom-bar-item')));
@@ -192,11 +192,11 @@ void runWidgetTests() {
     expect(find.text('Linha Castanha'), findsOneWidget,
         reason: "O ecrã de detalhe deveria apresentar o nome da linha 'Linha Castanha' (segundo elemento da lista)");
   },
-  dependsOn: [
-    "[Lista estacoes] Apresenta estacoes"
-  ]));
+      dependsOn: [
+        "Lista estacoes - Apresenta estacoes"
+      ]));
 
-  testWidgets("[Incidentes] Existencia de campos do formulario e botao de submeter", checkDependsOn((tester) async {
+  testWidgets("Incidentes - Existencia de campos do formulario e botao de submeter", checkDependsOn((tester) async {
     await _pumpApp(tester);
 
     // Navigate to Incidents
@@ -245,12 +245,12 @@ void runWidgetTests() {
     expect(submitButtonViewFinder, findsOneWidget,
         reason: "No ecrã do formulário, deveria existir um Widget com a key 'incident-form-submit-button");
   },
-  dependsOn: [
-    "[Navegacao] Tem uma bottom bar com 4 opcoes",
-    "[Navegacao] Bottom bar navega para os 4 ecras"
-  ]));
+      dependsOn: [
+        "Navegacao - Tem uma bottom bar com 4 opcoes",
+        "Navegacao - Bottom bar navega para os 4 ecras"
+      ]));
 
-  testWidgets('[Incidentes] Valicadoes de erro', checkDependsOn((tester) async {
+  testWidgets('Incidentes - Valicadoes de erro', checkDependsOn((tester) async {
     final stations = [
       Station(
         id: "st1",
@@ -321,7 +321,7 @@ void runWidgetTests() {
     expect(find.byType(SnackBar), findsNothing);
   }));
 
-  testWidgets("[Incidentes] Inserir incidente", checkDependsOn((tester) async {
+  testWidgets("Incidentes - Inserir incidente", checkDependsOn((tester) async {
     final stations = [
       Station(
         id: "st1",
@@ -340,10 +340,10 @@ void runWidgetTests() {
     ];
 
     final expectedReport = IncidentReport(
-      timestamp: DateTime(2024, 6, 5, 10, 0),
-      rate: 4,
-      type: IncidentType.ELEVATOR,
-      notes: "Elevador estava avariado"
+        timestamp: DateTime(2024, 6, 5, 10, 0),
+        rate: 4,
+        type: IncidentType.ELEVATOR,
+        notes: "Elevador estava avariado"
     );
 
     // Place here defaultTestStations to make obvious which stations are being used
@@ -388,8 +388,8 @@ void runWidgetTests() {
         .first;
 
     expect(actualReport.type, expectedReport.type,
-      reason: "O tipo do incidente reportado deveria ser "
-          "'${expectedReport.type}' e não '${actualReport.type}'"
+        reason: "O tipo do incidente reportado deveria ser "
+            "'${expectedReport.type}' e não '${actualReport.type}'"
     );
 
     final df = DateFormat("dd/MM/yyyy HH:mm");
@@ -408,12 +408,12 @@ void runWidgetTests() {
             "'${expectedReport.notes}' e não '${actualReport.notes}'"
     );
   },
-  dependsOn: [
-    "[Navegacao] Tem uma bottom bar com 4 opcoes",
-    "[Navegacao] Bottom bar navega para os 4 ecras"
-  ]));
+      dependsOn: [
+        "Navegacao - Tem uma bottom bar com 4 opcoes",
+        "Navegacao - Bottom bar navega para os 4 ecras"
+      ]));
 
-  testWidgets("[Detalhe] Apresenta incidente", checkDependsOn((tester) async {
+  testWidgets("Detalhe - Apresenta incidente", checkDependsOn((tester) async {
     final stations = [
       Station(
         id: "st1",
@@ -450,15 +450,15 @@ void runWidgetTests() {
     await _pumpApp(tester, testStations: stations);
 
     final expectedIncident = stations.first
-      .reports
-      .first;
+        .reports
+        .first;
 
     await tester.tap(find.byKey(Key('list-bottom-bar-item')));
     await tester.pumpAndSettle();
 
     final Finder listTilesFinder = find.descendant(
-      of: find.byKey(Key('list-view')),
-      matching: find.byType(ListTile)
+        of: find.byKey(Key('list-view')),
+        matching: find.byType(ListTile)
     );
 
     // tap the first tile
@@ -485,9 +485,9 @@ void runWidgetTests() {
     expect(find.text(expectedIncident.notes!), findsAtLeastNWidgets(1),
         reason: "Deveria existir pelo menos um Text com o texto '${expectedIncident.notes} (texto de uma dos incidentes)'");
   },
-  dependsOn: [
-    "[Lista estacoes] Navega para o detalhe da estacao escolhida",
-  ]));
+      dependsOn: [
+        "Lista estacoes - Navega para o detalhe da estacao escolhida",
+      ]));
 
 }
 
