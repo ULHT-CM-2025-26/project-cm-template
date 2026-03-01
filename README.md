@@ -1,6 +1,13 @@
-# cmproject
+## Execução dos testes
 
-A new Flutter project.
+Embora não sendo uma boa prática no desenho de testes, a nível académico faz sentido que alguns testes tenham precedências. Exemplo:
+Não faz sentido testar se a submissão do formulário funciona quando o teste que verifica a navegação para esse ecrã falha. Nesse sendido, caso executem os testes através do método `main` (onde todos os testes são executados) esta precedência é verificada dando algumas dicas sobre que teste deverão resolver primeiro.
+
+Se, quiserem executar algum teste sem esta funcionalidade, basta seguirem estes passos:
+
+![](docs/config.png)
+
+![](docs/args.png)
 
 ## Pressupostos para os testes
 
