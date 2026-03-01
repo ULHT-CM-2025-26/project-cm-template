@@ -88,10 +88,10 @@ void runWidgetTests() {
         Key("incidents-report-screen"));
 
     expect(incidentsScreenFinder, findsOneWidget,
-        reason: "O ecrã do registo de incidentes deveria ter um Scaffold com a key 'incidents-screen'");
+        reason: "O ecrã do registo de incidentes deveria ter um Scaffold com a key 'incidents-report-screen'");
 
     expect(tester.widget(incidentsScreenFinder), isA<Scaffold>(),
-        reason: "A key 'incidents-screen' deveria estar associada a um Scaffold no ecrã do registo de incidentes");
+        reason: "A key 'incidents-report-screen' deveria estar associada a um Scaffold no ecrã do registo de incidentes");
   }));
 
   testWidgets('Lista estacoes - Apresenta estacoes', checkDependsOn((tester) async {
@@ -305,7 +305,6 @@ void runWidgetTests() {
     expect(find.textContaining('Preencha a avaliação'), findsOneWidget);
     expect(find.textContaining('Preencha a data e hora'), findsOneWidget);
 
-    expect(find.byType(SnackBar), findsOneWidget);
     await tester.pumpAndSettle(Duration(seconds: 5));
 
     // Test with all mandatory fields filled but notes empty (optional)
@@ -317,8 +316,6 @@ void runWidgetTests() {
     await tester.ensureVisible(submitButtonViewFinder);
     await tester.tap(submitButtonViewFinder);
     await tester.pumpAndSettle();
-
-    expect(find.byType(SnackBar), findsNothing);
   }));
 
   testWidgets("Incidentes - Inserir incidente", checkDependsOn((tester) async {
@@ -379,6 +376,7 @@ void runWidgetTests() {
 
     final Finder submitButtonViewFinder = find.byKey(Key('incident-form-submit-button'));
 
+    await tester.ensureVisible(submitButtonViewFinder);
     await tester.tap(submitButtonViewFinder);
     await tester.pumpAndSettle(Duration(milliseconds: 200));
 

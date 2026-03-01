@@ -17,10 +17,4 @@ class IncidentReport {
   final String? notes;
   final IncidentType type;
 
-  IncidentReport({
-    required this.timestamp,
-    required this.rate,
-    required this.type,
-    this.notes
-  });
 }

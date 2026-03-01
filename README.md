@@ -40,6 +40,11 @@ OTHER
     * `map-bottom-bar-item`
     * `incidents-report-bottom-bar-item`
 * A `ListView` onde são apresentadas as estações tem a key `list-view`
+* Todos os ecrãs têm um Widget do tipo `Scaffold` com uma key relacionada com o ecrã em questão:
+    * `dashboard-screen`
+    * `list-screen`
+    * `map-screen`
+    * `incidents-report-screen`
 * Os campos do formulário para inserir os incidentes têm que ser do tipo `TestableFormField` com as seguintes keys:
     * `incident-station-selection-field`
     * `incident-type-selection-field`
@@ -54,4 +59,5 @@ OTHER
     * 'Preecha o tipo de incidente'
     * 'Preencha a avaliação'
     * 'Preencha a data e hora'
-* Ainda em caso de erro, o formulário deverá aprenser uma `Snackbar` com uma mensagem sugestiva para o utilizador corrigir os erros
+* Sempre que a cor da linha (Vermelha, Azul, etc) for mencionada, deve ser seguida da palavra "Linha".
+* Os argumentos dos contrutores devem ser todos named ou seja, não posicionais.
