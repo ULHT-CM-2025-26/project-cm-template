@@ -271,7 +271,7 @@ void runWidgetTests() {
     final incident = IncidentReport(
         timestamp: DateTime(2024, 6, 5, 10, 0),
         rate: 4,
-        type: IncidentType.ELEVATOR
+        type: IncidentType.Elevator
     );
 
     // Place here defaultTestStations to make obvious which stations are being used
@@ -339,7 +339,7 @@ void runWidgetTests() {
     final expectedReport = IncidentReport(
         timestamp: DateTime(2024, 6, 5, 10, 0),
         rate: 4,
-        type: IncidentType.ELEVATOR,
+        type: IncidentType.Elevator,
         notes: "Elevador estava avariado"
     );
 
@@ -422,7 +422,7 @@ void runWidgetTests() {
         reports: [
           IncidentReport(
             timestamp: DateTime(2024, 6, 2, 14, 30),
-            type: IncidentType.ELEVATOR,
+            type: IncidentType.Elevator,
             rate: 1,
             notes: "Elevador a funcionar mas estava muito sujo",
           ),
@@ -437,7 +437,7 @@ void runWidgetTests() {
           reports: [
             IncidentReport(
               timestamp: DateTime(2024, 6, 3, 9, 15),
-              type: IncidentType.TURNSTILE,
+              type: IncidentType.Turnstile,
               rate: 5,
               notes: "Turniquete para pessoas com mobilidade reduzida estava avariado",
             ),

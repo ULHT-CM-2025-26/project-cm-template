@@ -1,9 +1,9 @@
 enum IncidentType {
-  ESCALATOR('Escada rolante'),
-  ELEVATOR('Elevador'),
-  TICKET_MACHINE('Máquina de bilhetes'),
-  TURNSTILE('Torniquete'),
-  OTHER('Outro');
+  Escalator('Escada rolante'),
+  Elevator('Elevador'),
+  TicketMachine('Máquina de bilhetes'),
+  Turnstile('Torniquete'),
+  Other('Outro');
 
   final String displayName;
 
